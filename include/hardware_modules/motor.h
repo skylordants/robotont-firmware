@@ -5,35 +5,7 @@
 #include "QEI.h"
 #include "PID.h"
 #include "moving_average.h"
-
-
-/**
- * @brief A configuration for the Motor
- */
-struct MotorConfig
-{
-  PinName pin_dir1; 
-  PinName pin_dir2;
-  PinName pin_pwm;
-  PinName pin_enca;
-  PinName pin_encb;
-  PinName pin_fault;
-  PinName pin_feedback;
-
-  //Default PID parameters
-  float pid_k_p;
-  float pid_tau_i;
-  float pid_tau_d;
-  float pid_dt;
-
-  float enc_cpr; // encoder counts per revolution
-  float gear_ratio; // gearbox reduction ratio
-  float wheel_radius; // wheel outer radius
-
-  // wheel position in polar coordinates
-  float wheel_pos_r; // distance from center
-  float wheel_pos_phi; // angle relative to x-axis (forward)
-};
+#include "motor_config.h"
 
 /**
  * \todo Needs attention

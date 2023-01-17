@@ -1,5 +1,5 @@
 #include "mbed.h"
-#include "motor.h"
+#include "hardware_modules/motor.h"
 #include <algorithm>
 
 Motor::Motor(const MotorConfig& cfg)

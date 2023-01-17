@@ -4,7 +4,7 @@
 #include "mbed.h"
 #include "Matrix.h"
 
-#include "motor.h"
+#include "hardware_modules/motor.h"
 
 /** 
  * \brief Odometry class

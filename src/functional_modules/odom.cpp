@@ -1,4 +1,4 @@
-#include "odom.h"
+#include "functional_modules/odom.h"
 #include "MatrixMath.h"
 
 Odom::Odom(const MotorConfig& cfg0, const MotorConfig& cfg1, const MotorConfig& cfg2,

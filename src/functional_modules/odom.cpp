@@ -34,6 +34,17 @@ Odom::~Odom()
 
 }
 
+void Odom::processPacket(const std::vector<std::string>& cmd, Timer& cmd_timer)
+{
+
+}
+
+void Odom::loop()
+{
+
+}
+
+
 void Odom::reset()
 {
   odom_pos_.Clear();

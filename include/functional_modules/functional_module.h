@@ -9,6 +9,9 @@ class FunctionalModule
 {
 public:
   FunctionalModule(/*std::vector<std::string> packet_headers !!!Until I figure out, how to do this!!!*/);
+
+  virtual ~FunctionalModule();
+
   // TEMP:
   bool packetOwner(std::string packet_header);
 

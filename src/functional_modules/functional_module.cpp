@@ -5,6 +5,10 @@ FunctionalModule::FunctionalModule(/*std::vector<std::string> packet_headers*/)
 
 }
 
+FunctionalModule::~FunctionalModule() {
+
+}
+
 bool FunctionalModule::packetOwner(std::string packet_header)
 {
   for (int i = 0; i < packet_headers_.size(); i++) {

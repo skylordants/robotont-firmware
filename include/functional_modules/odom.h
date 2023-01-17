@@ -4,13 +4,14 @@
 #include "mbed.h"
 #include "Matrix.h"
 
+#include "functional_modules/functional_module.h"
 #include "hardware_modules/motor.h"
 
 /** 
  * \brief Odometry class
  * This class calculates robot's position according to the wheel speed and their confifguration
  */
-class Odom
+class Odom : FunctionalModule
 {
 public:
   /**
@@ -22,6 +23,10 @@ public:
    */
   Odom(const MotorConfig& cfg0, const MotorConfig& cfg1, const MotorConfig& cfg2, float delta_t);
   ~Odom();
+
+  void processPacket(const std::vector<std::string>& cmd, Timer& cmd_timer);
+
+  void loop();
 
   /**
    * \brief Resets the odometry

@@ -91,7 +91,7 @@ int main()
 
   // Initialize modules
   motorModule = new OmniMotorsControl(omnimotors);
-  packetprocessor = PacketProcessor(&cmd_timer);
+  packetprocessor = PacketProcessor(&cmd_timer, &serial_pc);
 
   packetprocessor.registerModule(motorModule);
 

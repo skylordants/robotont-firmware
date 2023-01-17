@@ -1,12 +1,15 @@
 #include <sstream>
 #include <vector>
+#include <cstdarg>
+
 #include "packetprocessor.h"
 
 #define MAX_CMD_ARGS 5
 
-PacketProcessor::PacketProcessor(Timer* cmd_timer)
+PacketProcessor::PacketProcessor(Timer* cmd_timer, RawSerial* serial_pc)
 {
   cmd_timer_ = cmd_timer;
+  serial_pc_ = serial_pc;
 }
 
 PacketProcessor::PacketProcessor()
@@ -67,4 +70,15 @@ void PacketProcessor::processPacket(const std::string& packet)
     //  m[i].setPIDTunings(k_p, tau_i, tau_d);
     //}
   }*/
+}
+
+void PacketProcessor::sendPacket(char *fmt, ...) {
+  char buffer[1000] = {0};
+
+  std::va_list args;
+
+  va_start(args, fmt);
+  vsnprintf(buffer, 1000, fmt, args);
+  va_end(args);
+  serial_pc_->printf("%s", buffer);
 }

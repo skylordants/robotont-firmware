@@ -17,7 +17,7 @@ OmniMotorsControl::OmniMotorsControl(OmniMotors *omnimotors)
   cmd_timer_ = Timer();
   cmd_timer_.start();
   cmd_timeout_checker_ = Ticker();
-  cmd_timeout_checker_.attach(this, checkForTimeout, 0.1);
+  cmd_timeout_checker_.attach(callback(this, &OmniMotorsControl::checkForTimeout), 0.1);
 }
 
 OmniMotorsControl::~OmniMotorsControl()

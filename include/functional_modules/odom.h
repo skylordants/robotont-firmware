@@ -5,23 +5,23 @@
 #include "Matrix.h"
 
 #include "functional_modules/functional_module.h"
-#include "hardware_modules/motor.h"
+#include "hardware_modules/omnimotors.h"
+#include "packetprocessor.h"
 
 /** 
  * \brief Odometry class
  * This class calculates robot's position according to the wheel speed and their confifguration
  */
-class Odom : FunctionalModule
+class Odom : public FunctionalModule
 {
 public:
   /**
    * \brief Constructor
-   * \param cfg0 Configuration of motor 0
-   * \param cfg1 Configuration of motor 1
-   * \param cfg2 Configuration of motor 2
+   * \param packetprocessor Pointer to packetprocessor
+   * \param omnimotors Pointer to omnimotors
    * \param delta_t period of how often the odometry will be updated
    */
-  Odom(const MotorConfig& cfg0, const MotorConfig& cfg1, const MotorConfig& cfg2, float delta_t);
+  Odom(PacketProcessor *packetprocessor, OmniMotors *omnimotors, float delta_t);
   ~Odom();
 
   void processPacket(const std::vector<std::string>& cmd);
@@ -84,7 +84,8 @@ public:
 
 
 private:
-  const MotorConfig motor_configs_[3]; /**< Motor configurations */
+  OmniMotors *omnimotors_;
+  PacketProcessor *packetprocessor_; // Put this here instead of FunctionalModule to avoid a cyclic dependency
 
   Matrix wheel_vel_; /**< Vector with wheel speeds [rad/s] */
   Matrix robot_vel_; /**< Velocity vector (dX, dY, dtheta) in robot frame */

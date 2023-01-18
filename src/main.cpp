@@ -15,12 +15,10 @@
 
 
 // Temp initializations: eventually somehow automatically
-OmniMotors omnimotors = OmniMotors();
-OmniMotorsControl* motorModule;
+OmniMotors omnimotors = OmniMotors(cfg0, cfg1, cfg2);
 PacketProcessor packetprocessor;
-
-// Initialize odometry
-Odom odom_(cfg0, cfg1, cfg2, MAIN_DELTA_T);
+OmniMotorsControl* motorModule;
+Odom* odom;
 
 // Timeout
 Timer main_timer;
@@ -76,10 +74,12 @@ int main()
   serial_pc.printf("**** MAIN ****\r\n");
 
   // Initialize modules
-  motorModule = new OmniMotorsControl(&omnimotors);
   packetprocessor = PacketProcessor(&serial_pc);
+  motorModule = new OmniMotorsControl(&omnimotors);
+  odom = new Odom(&packetprocessor, &omnimotors, MAIN_DELTA_T);
 
   packetprocessor.registerModule(motorModule);
+  packetprocessor.registerModule(odom);
 
 
   // MAIN LOOP
@@ -111,9 +111,7 @@ int main()
     }
     
     // Update odometry
-    odom_.update(omnimotors.m[0].getMeasuredSpeed(), omnimotors.m[1].getMeasuredSpeed(), omnimotors.m[2].getMeasuredSpeed());
-    serial_pc.printf("ODOM:%f:%f:%f:%f:%f:%f\r\n", odom_.getPosX(), odom_.getPosY(),
-                     odom_.getOriZ(), odom_.getLinVelX(), odom_.getLinVelY(), odom_.getAngVelZ());
+    odom->loop();
     // Synchronize to given MAIN_DELTA_T
     wait_us(MAIN_DELTA_T*1000*1000 - main_timer.read_us());
   }

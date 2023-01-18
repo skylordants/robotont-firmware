@@ -25,7 +25,7 @@ public:
 
   virtual void stop();
 
-protected:
+private:
   std::vector<std::string> packet_headers_;
 };
 

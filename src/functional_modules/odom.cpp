@@ -1,22 +1,22 @@
 #include "functional_modules/odom.h"
 #include "MatrixMath.h"
 
-Odom::Odom(const MotorConfig& cfg0, const MotorConfig& cfg1, const MotorConfig& cfg2,
-           float delta_t)
-  : motor_configs_({ cfg0, cfg1, cfg2 })
-  , wheel_vel_(3, 1)
+Odom::Odom(PacketProcessor *packetprocessor, OmniMotors *omnimotors, float delta_t)
+  : wheel_vel_(3, 1)
   , robot_vel_(3, 1)
   , odom_vel_(3, 1)
   , odom_pos_(3, 1)
   , odom_matrix_(3, 3)
   , odom_matrix_inv_(3, 3)
   , delta_t_(delta_t)
+  , omnimotors_(omnimotors)
+  , packetprocessor_(packetprocessor)
 {
   // add elements to odom matrix row by row
   for (int i = 0; i < 3; i++)
   {
-    odom_matrix_ << -sin(motor_configs_[i].wheel_pos_phi) << cos(motor_configs_[i].wheel_pos_phi)
-                 << motor_configs_[i].wheel_pos_r;
+    odom_matrix_ << -sin(omnimotors_->motor_configs[i].wheel_pos_phi) << cos(omnimotors_->motor_configs[i].wheel_pos_phi)
+                 << omnimotors_->motor_configs[i].wheel_pos_r;
   }
   
   ///TODO: Check if determinant is zero and report somehow
@@ -41,7 +41,8 @@ void Odom::processPacket(const std::vector<std::string>& cmd)
 
 void Odom::loop()
 {
-
+  update(omnimotors_->m[0].getMeasuredSpeed(), omnimotors_->m[1].getMeasuredSpeed(), omnimotors_->m[2].getMeasuredSpeed());
+  packetprocessor_->sendPacket("ODOM:%f:%f:%f:%f:%f:%f\r\n", getPosX(), getPosY(), getOriZ(), getLinVelX(), getLinVelY(), getAngVelZ());
 }
 
 

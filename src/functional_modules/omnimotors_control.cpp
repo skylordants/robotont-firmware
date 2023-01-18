@@ -3,6 +3,8 @@
 
 #include "functional_modules/omnimotors_control.h"
 
+#define CMD_TIMEOUT_MS 1000 // If velocity command is not received within this period all motors are stopped.
+
 //std::vector<std::string> headers("MS", "RS");
 
 OmniMotorsControl::OmniMotorsControl(OmniMotors omnimotors_)
@@ -10,7 +12,10 @@ OmniMotorsControl::OmniMotorsControl(OmniMotors omnimotors_)
 {
   registerHeader("MS");
   registerHeader("RS");
-  omnimotors = omnimotors_;
+  cmd_timer_ = Timer();
+  cmd_timer_.start();
+  cmd_timeout_checker_ = Ticker();
+  cmd_timeout_checker_.attach(this, checkForTimeout, 0.1);
 }
 
 OmniMotorsControl::~OmniMotorsControl()
@@ -18,7 +23,7 @@ OmniMotorsControl::~OmniMotorsControl()
 
 }
 
-void OmniMotorsControl::processPacket(const std::vector<std::string>& cmd, Timer& cmd_timer) {
+void OmniMotorsControl::processPacket(const std::vector<std::string> &cmd) {
   // MS - Set motor speeds manually (linear speed on wheel m/s)
   /* MS:motor1_speed:motor2_speed:motor3_speed */
   if (cmd[0] == "MS")
@@ -29,7 +34,7 @@ void OmniMotorsControl::processPacket(const std::vector<std::string>& cmd, Timer
       //serial_pc.printf("Setpoint %d, %f\r\n", i, speed_setpoint);
       omnimotors.m[i].setSpeedSetPoint(speed_setpoint);
     }
-    cmd_timer.reset();
+    cmd_timer_.reset();
   }
 
   // RS - Set motor speeds based on robot velocities. We use ROS coordinate convention: x-forward,
@@ -57,7 +62,7 @@ void OmniMotorsControl::processPacket(const std::vector<std::string>& cmd, Timer
         omnimotors.m[i].setSpeedSetPoint(speed);
       }
     }
-    cmd_timer.reset();
+    cmd_timer_.reset();
   }
 }
 
@@ -65,5 +70,13 @@ void OmniMotorsControl::stop() {
   for (uint8_t i = 0; i < MOTOR_COUNT; i++)
   {
     omnimotors.m[i].stop();
+  }
+}
+
+// If motors haven't got a command in CMD_TIMEOUT_MS ms, then turn them off
+void OmniMotorsControl::checkForTimeout() {
+  if ((cmd_timer_.read_ms()) > CMD_TIMEOUT_MS)
+  {
+    stop();
   }
 }

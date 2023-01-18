@@ -10,7 +10,7 @@
 class PacketProcessor
 {
 public:
-  PacketProcessor(Timer* cmd_timer, RawSerial* serial_pc);
+  PacketProcessor(RawSerial *serial_pc);
 
   PacketProcessor();
 
@@ -19,9 +19,9 @@ public:
   void processPacket(const std::string& packet);
 
   void sendPacket(char *fmt, ...);
+
 private:
-  Timer* cmd_timer_;
-  RawSerial* serial_pc_;
+  RawSerial *serial_pc_;
   std::vector<FunctionalModule*> functional_modules_;
 };
 

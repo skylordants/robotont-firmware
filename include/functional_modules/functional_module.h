@@ -19,7 +19,7 @@ public:
 
   std::vector<std::string> ownedHeaders();
 
-  virtual void processPacket(const std::vector<std::string>& cmd, Timer& cmd_timer) = 0;
+  virtual void processPacket(const std::vector<std::string>& cmd) = 0;
 
   virtual void loop();
 

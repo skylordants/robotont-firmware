@@ -15,13 +15,15 @@ public:
 
   ~OmniMotorsControl();
 
-  void processPacket(const std::vector<std::string>& cmd, Timer& cmd_timer);
+  void processPacket(const std::vector<std::string>& cmd);
 
   void stop();
 
-  //bool packetOwner(std::string packet_header);
 private:
-  OmniMotors omnimotors;
+  void checkForTimeout();
+  Timer cmd_timer_;
+  Ticker cmd_timeout_checker_;
+
 };
 
 #endif

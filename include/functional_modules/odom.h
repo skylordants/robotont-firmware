@@ -24,7 +24,7 @@ public:
   Odom(const MotorConfig& cfg0, const MotorConfig& cfg1, const MotorConfig& cfg2, float delta_t);
   ~Odom();
 
-  void processPacket(const std::vector<std::string>& cmd, Timer& cmd_timer);
+  void processPacket(const std::vector<std::string>& cmd);
 
   void loop();
 

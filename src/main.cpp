@@ -5,8 +5,6 @@
 #include <vector>
 #include "motor_config.h"
 
-#define CMD_TIMEOUT_MS 1000 // If velocity command is not received within this period all motors are stopped.
-
 
 #include "motor_config.h"
 #include "packetprocessor.h"
@@ -25,8 +23,7 @@ PacketProcessor packetprocessor;
 Odom odom_(cfg0, cfg1, cfg2, MAIN_DELTA_T);
 
 // Timeout
-Timer cmd_timer, main_timer;
-Ticker cmd_timeout_checker;
+Timer main_timer;
 
 // Variables for serial connection
 RawSerial serial_pc(USBTX, USBRX);  // tx, rx
@@ -70,14 +67,6 @@ void pc_rx_callback()
   }
 }
 
-void check_for_timeout()
-{
-  if ((cmd_timer.read_ms()) > CMD_TIMEOUT_MS)
-  {
-    motorModule->stop();
-  }
-}
-
 int main()
 {
   // Initialize serial connection
@@ -86,12 +75,9 @@ int main()
   serial_pc.attach(&pc_rx_callback);
   serial_pc.printf("**** MAIN ****\r\n");
 
-  cmd_timeout_checker.attach(check_for_timeout, 0.1);
-  cmd_timer.start();
-
   // Initialize modules
   motorModule = new OmniMotorsControl(omnimotors);
-  packetprocessor = PacketProcessor(&cmd_timer, &serial_pc);
+  packetprocessor = PacketProcessor(&serial_pc);
 
   packetprocessor.registerModule(motorModule);
 

@@ -6,9 +6,8 @@
 
 #define MAX_CMD_ARGS 5
 
-PacketProcessor::PacketProcessor(Timer* cmd_timer, RawSerial* serial_pc)
+PacketProcessor::PacketProcessor(RawSerial *serial_pc)
 {
-  cmd_timer_ = cmd_timer;
   serial_pc_ = serial_pc;
 }
 
@@ -17,7 +16,7 @@ PacketProcessor::PacketProcessor()
 
 }
 
-void PacketProcessor::registerModule(FunctionalModule* funtional_module) {
+void PacketProcessor::registerModule(FunctionalModule *funtional_module) {
   functional_modules_.push_back(funtional_module);
 }
 
@@ -50,14 +49,10 @@ void PacketProcessor::processPacket(const std::string& packet)
 
   for (int module = 0; module < functional_modules_.size(); module++) {
     if (functional_modules_[module]->packetOwner(cmd[0])) {
-      functional_modules_[module]->processPacket(cmd, *cmd_timer_);
+      functional_modules_[module]->processPacket(cmd);
     }
   }
 
-  /*if (motorModule->packetOwner(cmd[0]))
-  {
-    motorModule->processPacket(cmd, cmd_timer_);
-  }*/
 
   /*else if (cmd[0] == "PID")  // Update PID parameters
   {
@@ -72,7 +67,8 @@ void PacketProcessor::processPacket(const std::string& packet)
   }*/
 }
 
-void PacketProcessor::sendPacket(char *fmt, ...) {
+void PacketProcessor::sendPacket(char *fmt, ...)
+{
   char buffer[1000] = {0};
 
   std::va_list args;

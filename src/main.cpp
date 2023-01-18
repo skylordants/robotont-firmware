@@ -76,7 +76,7 @@ int main()
   serial_pc.printf("**** MAIN ****\r\n");
 
   // Initialize modules
-  motorModule = new OmniMotorsControl(omnimotors);
+  motorModule = new OmniMotorsControl(&omnimotors);
   packetprocessor = PacketProcessor(&serial_pc);
 
   packetprocessor.registerModule(motorModule);

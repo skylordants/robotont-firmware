@@ -7,11 +7,13 @@
 
 //std::vector<std::string> headers("MS", "RS");
 
-OmniMotorsControl::OmniMotorsControl(OmniMotors omnimotors_)
+OmniMotorsControl::OmniMotorsControl(OmniMotors *omnimotors)
   /*: FunctionalModule ((std::vector<std::string>){"MS", "RS"})*/
 {
   registerHeader("MS");
   registerHeader("RS");
+  omnimotors_ = omnimotors;
+
   cmd_timer_ = Timer();
   cmd_timer_.start();
   cmd_timeout_checker_ = Ticker();
@@ -32,7 +34,7 @@ void OmniMotorsControl::processPacket(const std::vector<std::string> &cmd) {
     {
       float speed_setpoint = std::atof(cmd[i + 1].c_str());
       //serial_pc.printf("Setpoint %d, %f\r\n", i, speed_setpoint);
-      omnimotors.m[i].setSpeedSetPoint(speed_setpoint);
+      omnimotors_->m[i].setSpeedSetPoint(speed_setpoint);
     }
     cmd_timer_.reset();
   }
@@ -51,7 +53,7 @@ void OmniMotorsControl::processPacket(const std::vector<std::string> &cmd) {
 
     for (uint8_t i = 0; i < MOTOR_COUNT; i++)
     {
-      float speed = lin_speed_mag * sin(lin_speed_dir - omnimotors.m[i].getWheelPosPhi()) +
+      float speed = lin_speed_mag * sin(lin_speed_dir - omnimotors_->m[i].getWheelPosPhi()) +
                     omnimotors.m[i].getWheelPosR() * angular_speed_z;
       if (abs(speed) < 1e-5)
       {
@@ -59,7 +61,7 @@ void OmniMotorsControl::processPacket(const std::vector<std::string> &cmd) {
       }
       else
       {
-        omnimotors.m[i].setSpeedSetPoint(speed);
+        omnimotors_->m[i].setSpeedSetPoint(speed);
       }
     }
     cmd_timer_.reset();
@@ -69,7 +71,7 @@ void OmniMotorsControl::processPacket(const std::vector<std::string> &cmd) {
 void OmniMotorsControl::stop() {
   for (uint8_t i = 0; i < MOTOR_COUNT; i++)
   {
-    omnimotors.m[i].stop();
+    omnimotors_->m[i].stop();
   }
 }
 

@@ -11,7 +11,7 @@
 class OmniMotorsControl : public FunctionalModule
 {
 public:
-  OmniMotorsControl(OmniMotors omnimotors);
+  OmniMotorsControl(OmniMotors *omnimotors);
 
   ~OmniMotorsControl();
 
@@ -24,6 +24,7 @@ private:
   Timer cmd_timer_;
   Ticker cmd_timeout_checker_;
 
+  OmniMotors *omnimotors_;
 };
 
 #endif

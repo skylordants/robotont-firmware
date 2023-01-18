@@ -54,10 +54,10 @@ void OmniMotorsControl::processPacket(const std::vector<std::string> &cmd) {
     for (uint8_t i = 0; i < MOTOR_COUNT; i++)
     {
       float speed = lin_speed_mag * sin(lin_speed_dir - omnimotors_->m[i].getWheelPosPhi()) +
-                    omnimotors.m[i].getWheelPosR() * angular_speed_z;
+                    omnimotors_->m[i].getWheelPosR() * angular_speed_z;
       if (abs(speed) < 1e-5)
       {
-        omnimotors.m[i].stop();
+        omnimotors_->m[i].stop();
       }
       else
       {

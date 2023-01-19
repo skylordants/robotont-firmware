@@ -7,8 +7,9 @@
 #define MAX_CMD_ARGS 5
 
 PacketProcessor::PacketProcessor(RawSerial *serial_pc)
+  :serial_pc_(serial_pc)
 {
-  serial_pc_ = serial_pc;
+
 }
 
 PacketProcessor::PacketProcessor()
@@ -16,7 +17,8 @@ PacketProcessor::PacketProcessor()
 
 }
 
-void PacketProcessor::registerModule(FunctionalModule *funtional_module) {
+void PacketProcessor::registerModule(FunctionalModule *funtional_module)
+{
   functional_modules_.push_back(funtional_module);
 }
 
@@ -47,8 +49,10 @@ void PacketProcessor::processPacket(const std::string& packet)
     return;
   }
 
-  for (int module = 0; module < functional_modules_.size(); module++) {
-    if (functional_modules_[module]->packetOwner(cmd[0])) {
+  for (unsigned int module = 0; module < functional_modules_.size(); module++)
+  {
+    if (functional_modules_[module]->packetOwner(cmd[0]))
+    {
       functional_modules_[module]->processPacket(cmd);
     }
   }

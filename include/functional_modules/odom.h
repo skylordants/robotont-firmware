@@ -84,9 +84,6 @@ public:
 
 
 private:
-  OmniMotors *omnimotors_;
-  PacketProcessor *packetprocessor_; // Put this here instead of FunctionalModule to avoid a cyclic dependency
-
   Matrix wheel_vel_; /**< Vector with wheel speeds [rad/s] */
   Matrix robot_vel_; /**< Velocity vector (dX, dY, dtheta) in robot frame */
   Matrix odom_vel_;  /**< Velocity vector (dx, dy, dtheta) in odom frame */
@@ -96,6 +93,9 @@ private:
   Matrix odom_matrix_inv_; /**< Inverse of the odometry matrix */
 
   const float delta_t_;
+
+  OmniMotors *omnimotors_;
+  PacketProcessor *packetprocessor_; // Put this here instead of FunctionalModule to avoid a cyclic dependency
 };
 
 #endif // ODOM_H

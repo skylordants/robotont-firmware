@@ -1,24 +1,22 @@
 #include "mbed.h"
-#include "hardware_modules/motor.h"
-#include "functional_modules/odom.h"
 #include <sstream>
 #include <vector>
 #include "motor_config.h"
 
-
-#include "motor_config.h"
 #include "packetprocessor.h"
 
 // Modules
+#include "hardware_modules/motor.h"
 #include "hardware_modules/omnimotors.h"
+#include "functional_modules/odom.h"
 #include "functional_modules/omnimotors_control.h"
 
 
-// Temp initializations: eventually somehow automatically
+// Temp declarations: eventually somehow automatically
 OmniMotors omnimotors = OmniMotors(cfg0, cfg1, cfg2);
 PacketProcessor packetprocessor;
-OmniMotorsControl* motorModule;
-Odom* odom;
+OmniMotorsControl *motorModule;
+Odom *odom;
 
 // Timeout
 Timer main_timer;
@@ -73,7 +71,7 @@ int main()
   serial_pc.attach(&pc_rx_callback);
   serial_pc.printf("**** MAIN ****\r\n");
 
-  // Initialize modules
+  // Temp initialize modules
   packetprocessor = PacketProcessor(&serial_pc);
   motorModule = new OmniMotorsControl(&omnimotors);
   odom = new Odom(&packetprocessor, &omnimotors, MAIN_DELTA_T);

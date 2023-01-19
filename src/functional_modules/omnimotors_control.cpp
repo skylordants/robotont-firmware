@@ -9,14 +9,14 @@
 
 OmniMotorsControl::OmniMotorsControl(OmniMotors *omnimotors)
   /*: FunctionalModule ((std::vector<std::string>){"MS", "RS"})*/
+  : cmd_timer_()
+  , cmd_timeout_checker_()
+  , omnimotors_(omnimotors)
 {
   registerHeader("MS");
   registerHeader("RS");
-  omnimotors_ = omnimotors;
 
-  cmd_timer_ = Timer();
   cmd_timer_.start();
-  cmd_timeout_checker_ = Ticker();
   cmd_timeout_checker_.attach(callback(this, &OmniMotorsControl::checkForTimeout), 0.1);
 }
 
@@ -25,7 +25,8 @@ OmniMotorsControl::~OmniMotorsControl()
 
 }
 
-void OmniMotorsControl::processPacket(const std::vector<std::string> &cmd) {
+void OmniMotorsControl::processPacket(const std::vector<std::string> &cmd)
+{
   // MS - Set motor speeds manually (linear speed on wheel m/s)
   /* MS:motor1_speed:motor2_speed:motor3_speed */
   if (cmd[0] == "MS")
@@ -68,7 +69,8 @@ void OmniMotorsControl::processPacket(const std::vector<std::string> &cmd) {
   }
 }
 
-void OmniMotorsControl::stop() {
+void OmniMotorsControl::stop()
+{
   for (uint8_t i = 0; i < MOTOR_COUNT; i++)
   {
     omnimotors_->m[i].stop();
@@ -76,7 +78,8 @@ void OmniMotorsControl::stop() {
 }
 
 // If motors haven't got a command in CMD_TIMEOUT_MS ms, then turn them off
-void OmniMotorsControl::checkForTimeout() {
+void OmniMotorsControl::checkForTimeout()
+{
   if ((cmd_timer_.read_ms()) > CMD_TIMEOUT_MS)
   {
     stop();

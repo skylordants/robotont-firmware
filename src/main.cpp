@@ -13,7 +13,7 @@
 
 
 // Temp declarations: eventually somehow automatically
-OmniMotors omnimotors = OmniMotors(cfg0, cfg1, cfg2);
+OmniMotors omnimotors(cfg0, cfg1, cfg2);
 PacketProcessor packetprocessor;
 OmniMotorsControl *motorModule;
 Odom *odom;

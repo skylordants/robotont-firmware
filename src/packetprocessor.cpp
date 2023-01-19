@@ -71,7 +71,7 @@ void PacketProcessor::processPacket(const std::string& packet)
   }*/
 }
 
-void PacketProcessor::sendPacket(char *fmt, ...)
+void PacketProcessor::sendPacket(const char *fmt, ...)
 {
   char buffer[1000] = {0};
 

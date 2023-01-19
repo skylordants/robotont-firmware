@@ -18,7 +18,7 @@ public:
 
   void processPacket(const std::string& packet);
 
-  void sendPacket(char *fmt, ...);
+  void sendPacket(const char *fmt, ...);
 
 private:
   RawSerial *serial_pc_;

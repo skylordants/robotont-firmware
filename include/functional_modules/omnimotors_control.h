@@ -21,8 +21,8 @@ public:
 
 private:
   void checkForTimeout();
-  Timer cmd_timer_;
-  Ticker cmd_timeout_checker_;
+  Timer *cmd_timer_;
+  Ticker *cmd_timeout_checker_;
 
   OmniMotors *omnimotors_;
 };

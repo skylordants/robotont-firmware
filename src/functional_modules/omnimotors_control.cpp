@@ -9,15 +9,15 @@
 
 OmniMotorsControl::OmniMotorsControl(OmniMotors *omnimotors)
   /*: FunctionalModule ((std::vector<std::string>){"MS", "RS"})*/
-  : cmd_timer_()
-  , cmd_timeout_checker_()
+  : cmd_timer_(new Timer())
+  , cmd_timeout_checker_(new Ticker())
   , omnimotors_(omnimotors)
 {
   registerHeader("MS");
   registerHeader("RS");
 
-  cmd_timer_.start();
-  cmd_timeout_checker_.attach(callback(this, &OmniMotorsControl::checkForTimeout), 0.1);
+  cmd_timer_->start();
+  cmd_timeout_checker_->attach(callback(this, &OmniMotorsControl::checkForTimeout), 0.1);
 }
 
 OmniMotorsControl::~OmniMotorsControl()
@@ -37,7 +37,7 @@ void OmniMotorsControl::processPacket(const std::vector<std::string> &cmd)
       //serial_pc.printf("Setpoint %d, %f\r\n", i, speed_setpoint);
       omnimotors_->m[i].setSpeedSetPoint(speed_setpoint);
     }
-    cmd_timer_.reset();
+    cmd_timer_->reset();
   }
 
   // RS - Set motor speeds based on robot velocities. We use ROS coordinate convention: x-forward,
@@ -65,7 +65,7 @@ void OmniMotorsControl::processPacket(const std::vector<std::string> &cmd)
         omnimotors_->m[i].setSpeedSetPoint(speed);
       }
     }
-    cmd_timer_.reset();
+    cmd_timer_->reset();
   }
 }
 
@@ -80,7 +80,7 @@ void OmniMotorsControl::stop()
 // If motors haven't got a command in CMD_TIMEOUT_MS ms, then turn them off
 void OmniMotorsControl::checkForTimeout()
 {
-  if ((cmd_timer_.read_ms()) > CMD_TIMEOUT_MS)
+  if ((cmd_timer_->read_ms()) > CMD_TIMEOUT_MS)
   {
     stop();
   }

@@ -1,14 +1,14 @@
 #include "functional_modules/odom.h"
 #include "MatrixMath.h"
 
-Odom::Odom(OmniMotors *omnimotors, float delta_t)
+Odom::Odom(OmniMotors *omnimotors)
   : wheel_vel_(3, 1)
   , robot_vel_(3, 1)
   , odom_vel_(3, 1)
   , odom_pos_(3, 1)
   , odom_matrix_(3, 3)
   , odom_matrix_inv_(3, 3)
-  , delta_t_(delta_t)
+  , delta_t_(MAIN_DELTA_T)
   , omnimotors_(omnimotors)
 {
   // add elements to odom matrix row by row

@@ -10,7 +10,7 @@
 #include "hardware_modules/omnimotors.h"
 #include "functional_modules/odom.h"
 #include "functional_modules/omnimotors_control.h"
-
+#include "motor_config.h"
 
 // Temp declarations: eventually somehow automatically
 OmniMotors omnimotors(cfg0, cfg1, cfg2);
@@ -74,7 +74,7 @@ int main()
   // Temp initialize modules
   packetprocessor = PacketProcessor(&serial_pc);
   motorModule = new OmniMotorsControl(&omnimotors);
-  odom = new Odom(&omnimotors, MAIN_DELTA_T);
+  odom = new Odom(&omnimotors);
 
   packetprocessor.registerModule(motorModule);
   packetprocessor.registerModule(odom);

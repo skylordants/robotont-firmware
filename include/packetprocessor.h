@@ -2,6 +2,7 @@
 #define PACKETPROCESSOR_H
 
 #include <vector>
+#include <map>
 
 #include "mbed.h"
 #include "functional_modules/functional_module.h"
@@ -14,15 +15,15 @@ public:
 
   PacketProcessor();
 
-  void registerModule(FunctionalModule *functional_module);
+  void registerHeader(const std::string &header, FunctionalModule *functional_module);
 
-  void processPacket(const std::string& packet);
+  void processPacket(const std::string &packet);
 
   void sendPacket(const char *buffer);
 
 private:
   RawSerial *serial_pc_;
-  std::vector<FunctionalModule*> functional_modules_;
+  std::map <std::string, FunctionalModule *> header_map_;
 };
 
 // For FunctionalModules to be able to send packets and not create a cyclic dependancy

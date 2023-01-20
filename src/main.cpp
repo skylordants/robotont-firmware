@@ -15,8 +15,8 @@
 // Temp declarations: eventually somehow automatically
 OmniMotors omnimotors(cfg0, cfg1, cfg2);
 PacketProcessor packetprocessor;  // This must be a global variable for FunctionalModules
-OmniMotorsControl *motorModule;
-Odom *odom;
+std::vector<FunctionalModule *> functional_modules;
+
 
 // Timeout
 Timer main_timer;
@@ -52,13 +52,31 @@ void pc_rx_callback()
 
     }
 
-    // if escape is received, clear the buffer and stop the motors for now
+    // if escape is received, clear the buffer and stop the motors for now / changed to stopping all modules currently
     if (c == 27)  // esc
     {
-      motorModule->stop();
+      for (unsigned int module = 0; module < functional_modules.size(); module++)
+      {
+        functional_modules[module]->stop();
+      }
 
       serial_buf[0] = '\0';
       serial_arrived = 0;
+    }
+  }
+}
+
+// All the module initializations, currently only FunctionalModules, but in the end, also HardwareModules
+void init()
+{
+  functional_modules.push_back(new OmniMotorsControl(&omnimotors));
+  functional_modules.push_back(new Odom(&omnimotors));
+
+  // Register all headers in packetprocessor
+  for (unsigned int module = 0; module < functional_modules.size(); module++) {
+    std::vector<std::string> headers = functional_modules[module]->ownedHeaders();
+    for (unsigned int header = 0; header < headers.size(); header++) {
+      packetprocessor.registerHeader(headers[header], functional_modules[module]);
     }
   }
 }
@@ -71,13 +89,11 @@ int main()
   serial_pc.attach(&pc_rx_callback);
   serial_pc.printf("**** MAIN ****\r\n");
 
-  // Temp initialize modules
+  // Initialize modules
   packetprocessor = PacketProcessor(&serial_pc);
-  motorModule = new OmniMotorsControl(&omnimotors);
-  odom = new Odom(&omnimotors);
 
-  packetprocessor.registerModule(motorModule);
-  packetprocessor.registerModule(odom);
+  init();
+
 
 
   // MAIN LOOP
@@ -108,8 +124,12 @@ int main()
       packet_received_b = false;
     }
     
-    // Update odometry
-    odom->loop();
+    // Call all loops, currently only Update odometry
+    for (unsigned int module = 0; module < functional_modules.size(); module++)
+    {
+      functional_modules[module]->loop();
+    }
+
     // Synchronize to given MAIN_DELTA_T
     wait_us(MAIN_DELTA_T*1000*1000 - main_timer.read_us());
   }

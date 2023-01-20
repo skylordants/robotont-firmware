@@ -19,6 +19,8 @@ public:
 
   std::vector<std::string> ownedHeaders();
 
+  void sendPacket(const char *fmt, ...);
+
   virtual void processPacket(const std::vector<std::string>& cmd) = 0;
 
   virtual void loop();

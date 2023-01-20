@@ -71,14 +71,7 @@ void PacketProcessor::processPacket(const std::string& packet)
   }*/
 }
 
-void PacketProcessor::sendPacket(const char *fmt, ...)
+void PacketProcessor::sendPacket(const char *buffer)
 {
-  char buffer[1000] = {0};
-
-  std::va_list args;
-
-  va_start(args, fmt);
-  vsnprintf(buffer, 1000, fmt, args);
-  va_end(args);
   serial_pc_->printf("%s", buffer);
 }

@@ -18,11 +18,14 @@ public:
 
   void processPacket(const std::string& packet);
 
-  void sendPacket(const char *fmt, ...);
+  void sendPacket(const char *buffer);
 
 private:
   RawSerial *serial_pc_;
   std::vector<FunctionalModule*> functional_modules_;
 };
+
+// For FunctionalModules to be able to send packets and not create a cyclic dependancy
+extern PacketProcessor packetprocessor;
 
 #endif

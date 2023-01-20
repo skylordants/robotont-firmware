@@ -14,7 +14,7 @@
 
 // Temp declarations: eventually somehow automatically
 OmniMotors omnimotors(cfg0, cfg1, cfg2);
-PacketProcessor packetprocessor;
+PacketProcessor packetprocessor;  // This must be a global variable for FunctionalModules
 OmniMotorsControl *motorModule;
 Odom *odom;
 
@@ -74,7 +74,7 @@ int main()
   // Temp initialize modules
   packetprocessor = PacketProcessor(&serial_pc);
   motorModule = new OmniMotorsControl(&omnimotors);
-  odom = new Odom(&packetprocessor, &omnimotors, MAIN_DELTA_T);
+  odom = new Odom(&omnimotors, MAIN_DELTA_T);
 
   packetprocessor.registerModule(motorModule);
   packetprocessor.registerModule(odom);

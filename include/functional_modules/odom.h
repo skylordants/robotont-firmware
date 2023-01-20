@@ -21,7 +21,7 @@ public:
    * \param omnimotors Pointer to omnimotors
    * \param delta_t period of how often the odometry will be updated
    */
-  Odom(PacketProcessor *packetprocessor, OmniMotors *omnimotors, float delta_t);
+  Odom(OmniMotors *omnimotors, float delta_t);
   ~Odom();
 
   void processPacket(const std::vector<std::string>& cmd);
@@ -95,7 +95,6 @@ private:
   const float delta_t_;
 
   OmniMotors *omnimotors_;
-  PacketProcessor *packetprocessor_; // Put this here instead of FunctionalModule to avoid a cyclic dependency
 };
 
 #endif // ODOM_H

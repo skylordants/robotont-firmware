@@ -1,7 +1,7 @@
 #include "functional_modules/odom.h"
 #include "MatrixMath.h"
 
-Odom::Odom(PacketProcessor *packetprocessor, OmniMotors *omnimotors, float delta_t)
+Odom::Odom(OmniMotors *omnimotors, float delta_t)
   : wheel_vel_(3, 1)
   , robot_vel_(3, 1)
   , odom_vel_(3, 1)
@@ -10,7 +10,6 @@ Odom::Odom(PacketProcessor *packetprocessor, OmniMotors *omnimotors, float delta
   , odom_matrix_inv_(3, 3)
   , delta_t_(delta_t)
   , omnimotors_(omnimotors)
-  , packetprocessor_(packetprocessor)
 {
   // add elements to odom matrix row by row
   for (int i = 0; i < 3; i++)
@@ -42,7 +41,7 @@ void Odom::processPacket(const std::vector<std::string>& cmd)
 void Odom::loop()
 {
   update(omnimotors_->m[0].getMeasuredSpeed(), omnimotors_->m[1].getMeasuredSpeed(), omnimotors_->m[2].getMeasuredSpeed());
-  packetprocessor_->sendPacket("ODOM:%f:%f:%f:%f:%f:%f\r\n", getPosX(), getPosY(), getOriZ(), getLinVelX(), getLinVelY(), getAngVelZ());
+  sendPacket("ODOM:%f:%f:%f:%f:%f:%f\r\n", getPosX(), getPosY(), getOriZ(), getLinVelX(), getLinVelY(), getAngVelZ());
 }
 
 

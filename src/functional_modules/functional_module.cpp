@@ -1,4 +1,5 @@
 #include "functional_modules/functional_module.h"
+#include "packetprocessor.h"
 
 FunctionalModule::FunctionalModule(/*std::vector<std::string> packet_headers*/)
 {
@@ -38,4 +39,15 @@ void FunctionalModule::loop()
 void FunctionalModule::stop()
 {
 
+}
+
+void FunctionalModule::sendPacket(const char *fmt, ...) {
+  char buffer[1000] = {0};
+
+  std::va_list args;
+
+  va_start(args, fmt);
+  vsnprintf(buffer, 1000, fmt, args);
+  va_end(args);
+  packetprocessor.sendPacket(buffer);
 }

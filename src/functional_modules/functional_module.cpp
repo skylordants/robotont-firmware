@@ -20,8 +20,8 @@ FunctionalModule::~FunctionalModule()
 
 bool FunctionalModule::packetOwner(std::string packet_header)
 {
-  for (unsigned int i = 0; i < packet_headers_.size(); i++) {
-    if (packet_headers_[i] == packet_header) {
+  for (std::vector<std::string>::iterator i = packet_headers_.begin(); i != packet_headers_.end(); i++) {
+    if (*i == packet_header) {
       return true;
     }
   }
@@ -51,9 +51,9 @@ std::vector<std::string> FunctionalModule::getDependencies()
 
 bool FunctionalModule::dependenciesMet()
 {
-  for (int module = 0; module < dependency_names_.size(); module++)
+  for (std::vector<std::string>::iterator module = dependency_names_.begin(); module != dependency_names_.end(); module++)
   {
-    if (hardware_module_dependencies_[dependency_names_[module]] == NULL)
+    if (hardware_module_dependencies_[*module] == NULL)
     {
       return false;
     }

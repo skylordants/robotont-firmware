@@ -58,9 +58,9 @@ void pc_rx_callback()
     // if escape is received, clear the buffer and stop the motors for now / changed to stopping all modules currently
     if (c == 27)  // esc
     {
-      for (unsigned int module = 0; module < functional_modules.size(); module++)
+      for (std::vector<FunctionalModule *>::iterator module = functional_modules.begin(); module != functional_modules.end(); module++)
       {
-        functional_modules[module]->stop();
+        (*module)->stop();
       }
 
       serial_buf[0] = '\0';
@@ -77,19 +77,19 @@ void init()
   functional_modules.push_back(new OmniMotorsControl());
   functional_modules.push_back(new Odom());
 
-  for (unsigned int module = 0; module < functional_modules.size(); module++) {
+  for (std::vector<FunctionalModule *>::iterator module = functional_modules.begin(); module != functional_modules.end(); module++) {
     // Register all headers
-    std::vector<std::string> headers = functional_modules[module]->ownedHeaders();
-    for (unsigned int header = 0; header < headers.size(); header++) {
-      packetprocessor.registerHeader(headers[header], functional_modules[module]);
+    std::vector<std::string> headers = (*module)->ownedHeaders();
+    for (std::vector<std::string>::iterator header = headers.begin(); header != headers.end(); header++) {
+      packetprocessor.registerHeader(*header, *module);
     }
 
     // Resolve all dependencies
-    std::vector<std::string> dependencies = functional_modules[module]->getDependencies();
-    for (unsigned int dependency = 0; dependency < dependencies.size(); dependency++) {
-      if (hardware_modules.find(dependencies[dependency]) != hardware_modules.end())
+    std::vector<std::string> dependencies = (*module)->getDependencies();
+    for (std::vector<std::string>::iterator dependency = dependencies.begin(); dependency != dependencies.end(); dependency++) {
+      if (hardware_modules.find(*dependency) != hardware_modules.end())
       {
-        functional_modules[module]->resolveDependency(dependencies[dependency], hardware_modules[dependencies[dependency]]);
+        (*module)->resolveDependency(*dependency, hardware_modules[*dependency]);
       }
       else
       {
@@ -97,7 +97,7 @@ void init()
       }
     }
 
-    functional_modules[module]->startModule();
+    (*module)->startModule();
   }
 }
 
@@ -145,9 +145,9 @@ int main()
     }
     
     // Call all loops, currently only Update odometry
-    for (unsigned int module = 0; module < functional_modules.size(); module++)
+    for (std::vector<FunctionalModule *>::iterator module = functional_modules.begin(); module != functional_modules.end(); module++)
     {
-      functional_modules[module]->loop();
+      (*module)->loop();
     }
 
     // Synchronize to given MAIN_DELTA_T

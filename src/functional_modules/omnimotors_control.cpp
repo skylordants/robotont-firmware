@@ -5,19 +5,15 @@
 
 #define CMD_TIMEOUT_MS 1000 // If velocity command is not received within this period all motors are stopped.
 
-//std::vector<std::string> headers("MS", "RS");
 
-OmniMotorsControl::OmniMotorsControl(OmniMotors *omnimotors)
-  /*: FunctionalModule ((std::vector<std::string>){"MS", "RS"})*/
+OmniMotorsControl::OmniMotorsControl()
   : cmd_timer_(new Timer())
   , cmd_timeout_checker_(new Ticker())
-  , omnimotors_(omnimotors)
+  /*, FunctionalModule ({ {"MS"}, {"RS"} })*/
 {
   registerHeader("MS");
   registerHeader("RS");
-
-  cmd_timer_->start();
-  cmd_timeout_checker_->attach(callback(this, &OmniMotorsControl::checkForTimeout), 0.1);
+  registerDependency("OmniMotors");
 }
 
 OmniMotorsControl::~OmniMotorsControl()
@@ -84,4 +80,19 @@ void OmniMotorsControl::checkForTimeout()
   {
     stop();
   }
+}
+
+bool OmniMotorsControl::startModule()
+{
+  if (!dependenciesMet())
+  {
+    return false;
+  }
+
+  omnimotors_ = (OmniMotors *)hardware_module_dependencies_["OmniMotors"];
+
+  cmd_timer_->start();
+  cmd_timeout_checker_->attach(callback(this, &OmniMotorsControl::checkForTimeout), 0.1);
+
+  return true;
 }

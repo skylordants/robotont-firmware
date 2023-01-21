@@ -1,7 +1,7 @@
 #include "functional_modules/odom.h"
 #include "MatrixMath.h"
 
-Odom::Odom(OmniMotors *omnimotors)
+Odom::Odom()
   : wheel_vel_(3, 1)
   , robot_vel_(3, 1)
   , odom_vel_(3, 1)
@@ -9,23 +9,8 @@ Odom::Odom(OmniMotors *omnimotors)
   , odom_matrix_(3, 3)
   , odom_matrix_inv_(3, 3)
   , delta_t_(MAIN_DELTA_T)
-  , omnimotors_(omnimotors)
 {
-  // add elements to odom matrix row by row
-  for (int i = 0; i < 3; i++)
-  {
-    odom_matrix_ << -sin(omnimotors_->motor_configs[i].wheel_pos_phi) << cos(omnimotors_->motor_configs[i].wheel_pos_phi)
-                 << omnimotors_->motor_configs[i].wheel_pos_r;
-  }
-  
-  ///TODO: Check if determinant is zero and report somehow
-  //MBED_ASSERT(MatrixMath::det(odom_matrix_));
-  
-  // calculate the inverse of odom
-  odom_matrix_inv_ = MatrixMath::Inv(odom_matrix_);
-
-  // initialize vectors with zeros
-  reset();
+  	registerDependency("OmniMotors");
 }
 
 Odom::~Odom()
@@ -43,6 +28,35 @@ void Odom::loop()
   update(omnimotors_->m[0].getMeasuredSpeed(), omnimotors_->m[1].getMeasuredSpeed(), omnimotors_->m[2].getMeasuredSpeed());
   sendPacket("ODOM:%f:%f:%f:%f:%f:%f\r\n", getPosX(), getPosY(), getOriZ(), getLinVelX(), getLinVelY(), getAngVelZ());
 }
+
+bool Odom::startModule()
+{
+  if (!dependenciesMet())
+  {
+    return false;
+  }
+
+  omnimotors_ = (OmniMotors *)hardware_module_dependencies_["OmniMotors"];
+
+  // add elements to odom matrix row by row
+  for (int i = 0; i < 3; i++)
+  {
+    odom_matrix_ << -sin(omnimotors_->motor_configs[i].wheel_pos_phi) << cos(omnimotors_->motor_configs[i].wheel_pos_phi)
+                 << omnimotors_->motor_configs[i].wheel_pos_r;
+  }
+  
+  ///TODO: Check if determinant is zero and report somehow
+  //MBED_ASSERT(MatrixMath::det(odom_matrix_));
+  
+  // calculate the inverse of odom
+  odom_matrix_inv_ = MatrixMath::Inv(odom_matrix_);
+
+  // initialize vectors with zeros
+  reset();
+
+  return true;
+}
+
 
 
 void Odom::reset()

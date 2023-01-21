@@ -11,13 +11,15 @@
 class OmniMotorsControl : public FunctionalModule
 {
 public:
-  OmniMotorsControl(OmniMotors *omnimotors);
+  OmniMotorsControl();
 
   ~OmniMotorsControl();
 
   void processPacket(const std::vector<std::string>& cmd);
 
   void stop();
+
+  bool startModule();
 
 private:
   void checkForTimeout();

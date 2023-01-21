@@ -1,20 +1,23 @@
 #include "mbed.h"
 #include <sstream>
 #include <vector>
+#include <map>
 #include "motor_config.h"
 
 #include "packetprocessor.h"
 
 // Modules
+#include "hardware_modules/hardware_module.h"
 #include "hardware_modules/motor.h"
 #include "hardware_modules/omnimotors.h"
+#include "functional_modules/functional_module.h"
 #include "functional_modules/odom.h"
 #include "functional_modules/omnimotors_control.h"
 #include "motor_config.h"
 
 // Temp declarations: eventually somehow automatically
-OmniMotors omnimotors(cfg0, cfg1, cfg2);
 PacketProcessor packetprocessor;  // This must be a global variable for FunctionalModules
+std::map<std::string, HardwareModule *> hardware_modules;
 std::vector<FunctionalModule *> functional_modules;
 
 
@@ -69,15 +72,32 @@ void pc_rx_callback()
 // All the module initializations, currently only FunctionalModules, but in the end, also HardwareModules
 void init()
 {
-  functional_modules.push_back(new OmniMotorsControl(&omnimotors));
-  functional_modules.push_back(new Odom(&omnimotors));
+  hardware_modules["OmniMotors"] = new OmniMotors(cfg0, cfg1, cfg2);
 
-  // Register all headers in packetprocessor
+  functional_modules.push_back(new OmniMotorsControl());
+  functional_modules.push_back(new Odom());
+
   for (unsigned int module = 0; module < functional_modules.size(); module++) {
+    // Register all headers
     std::vector<std::string> headers = functional_modules[module]->ownedHeaders();
     for (unsigned int header = 0; header < headers.size(); header++) {
       packetprocessor.registerHeader(headers[header], functional_modules[module]);
     }
+
+    // Resolve all dependencies
+    std::vector<std::string> dependencies = functional_modules[module]->getDependencies();
+    for (unsigned int dependency = 0; dependency < dependencies.size(); dependency++) {
+      if (hardware_modules.find(dependencies[dependency]) != hardware_modules.end())
+      {
+        functional_modules[module]->resolveDependency(dependencies[dependency], hardware_modules[dependencies[dependency]]);
+      }
+      else
+      {
+        // Some potential error management or don't start the module?
+      }
+    }
+
+    functional_modules[module]->startModule();
   }
 }
 

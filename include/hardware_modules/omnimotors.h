@@ -2,8 +2,9 @@
 #define OMNIMOTORS_H
 
 #include "hardware_modules/motor.h"
+#include "hardware_module.h"
 
-class OmniMotors
+class OmniMotors : public HardwareModule
 {
 public:
   OmniMotors(const MotorConfig& cfg0, const MotorConfig& cfg1, const MotorConfig& cfg2);

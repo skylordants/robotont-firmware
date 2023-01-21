@@ -21,12 +21,14 @@ public:
    * \param omnimotors Pointer to omnimotors
    * \param delta_t period of how often the odometry will be updated
    */
-  Odom(OmniMotors *omnimotors);
+  Odom();
   ~Odom();
 
   void processPacket(const std::vector<std::string>& cmd);
 
   void loop();
+
+  bool startModule();
 
   /**
    * \brief Resets the odometry

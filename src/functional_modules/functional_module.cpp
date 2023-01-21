@@ -1,7 +1,14 @@
 #include "functional_modules/functional_module.h"
 #include "packetprocessor.h"
 
-FunctionalModule::FunctionalModule(/*std::vector<std::string> packet_headers*/)
+/*FunctionalModule::FunctionalModule(std::vector<std::string> packet_headers, std::vector<std::string> hardware_module_dependencies)
+  : hardware_module_dependencies_(hardware_module_dependencies)
+  , packet_headers_(packet_headers)
+{
+  
+}*/
+
+FunctionalModule::FunctionalModule()
 {
 
 }
@@ -19,6 +26,49 @@ bool FunctionalModule::packetOwner(std::string packet_header)
     }
   }
 	return false;
+}
+
+void FunctionalModule::registerDependency(std::string name)
+{
+  if (hardware_module_dependencies_.find(name) == hardware_module_dependencies_.end())
+  {
+    hardware_module_dependencies_[name] = NULL;
+  }
+}
+
+void FunctionalModule::resolveDependency(std::string name, HardwareModule *hardware_module)
+{
+  if (hardware_module_dependencies_.find(name) != hardware_module_dependencies_.end())
+  {
+    hardware_module_dependencies_[name] = hardware_module;
+  }
+}
+
+std::vector<std::string> FunctionalModule::getDependencies()
+{
+  return dependency_names_;
+}
+
+bool FunctionalModule::dependenciesMet()
+{
+  for (int module = 0; module < dependency_names_.size(); module++)
+  {
+    if (hardware_module_dependencies_[dependency_names_[module]] == NULL)
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool FunctionalModule::startModule()
+{
+  if (!dependenciesMet())
+  {
+    return false;
+  }
+
+  return true;
 }
 
 void FunctionalModule::registerHeader(std::string packet_header)

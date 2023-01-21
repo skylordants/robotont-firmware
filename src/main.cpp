@@ -2,24 +2,14 @@
 #include <sstream>
 #include <vector>
 #include <map>
-#include "motor_config.h"
 
+#include "motor_config.h"
 #include "packetprocessor.h"
+#include "initializer.h"
 
-// Modules
-#include "hardware_modules/hardware_module.h"
-#include "hardware_modules/motor.h"
-#include "hardware_modules/omnimotors.h"
-#include "functional_modules/functional_module.h"
-#include "functional_modules/odom.h"
-#include "functional_modules/omnimotors_control.h"
-#include "motor_config.h"
 
-// Temp declarations: eventually somehow automatically
 PacketProcessor packetprocessor;  // This must be a global variable for FunctionalModules
-std::map<std::string, HardwareModule *> hardware_modules;
-std::vector<FunctionalModule *> functional_modules;
-
+Initializer initializer;
 
 // Timeout
 Timer main_timer;
@@ -58,7 +48,7 @@ void pc_rx_callback()
     // if escape is received, clear the buffer and stop the motors for now / changed to stopping all modules currently
     if (c == 27)  // esc
     {
-      for (std::vector<FunctionalModule *>::iterator module = functional_modules.begin(); module != functional_modules.end(); module++)
+      for (std::vector<FunctionalModule *>::iterator module = initializer.functional_modules.begin(); module != initializer.functional_modules.end(); module++)
       {
         (*module)->stop();
       }
@@ -69,37 +59,6 @@ void pc_rx_callback()
   }
 }
 
-// All the module initializations, currently only FunctionalModules, but in the end, also HardwareModules
-void init()
-{
-  hardware_modules["OmniMotors"] = new OmniMotors(cfg0, cfg1, cfg2);
-
-  functional_modules.push_back(new OmniMotorsControl());
-  functional_modules.push_back(new Odom());
-
-  for (std::vector<FunctionalModule *>::iterator module = functional_modules.begin(); module != functional_modules.end(); module++) {
-    // Register all headers
-    std::vector<std::string> headers = (*module)->ownedHeaders();
-    for (std::vector<std::string>::iterator header = headers.begin(); header != headers.end(); header++) {
-      packetprocessor.registerHeader(*header, *module);
-    }
-
-    // Resolve all dependencies
-    std::vector<std::string> dependencies = (*module)->getDependencies();
-    for (std::vector<std::string>::iterator dependency = dependencies.begin(); dependency != dependencies.end(); dependency++) {
-      if (hardware_modules.find(*dependency) != hardware_modules.end())
-      {
-        (*module)->resolveDependency(*dependency, hardware_modules[*dependency]);
-      }
-      else
-      {
-        // Some potential error management or don't start the module?
-      }
-    }
-
-    (*module)->startModule();
-  }
-}
 
 int main()
 {
@@ -111,9 +70,7 @@ int main()
 
   // Initialize modules
   packetprocessor = PacketProcessor(&serial_pc);
-
-  init();
-
+  initializer = Initializer(&packetprocessor);
 
 
   // MAIN LOOP
@@ -145,7 +102,7 @@ int main()
     }
     
     // Call all loops, currently only Update odometry
-    for (std::vector<FunctionalModule *>::iterator module = functional_modules.begin(); module != functional_modules.end(); module++)
+    for (std::vector<FunctionalModule *>::iterator module = initializer.functional_modules.begin(); module != initializer.functional_modules.end(); module++)
     {
       (*module)->loop();
     }

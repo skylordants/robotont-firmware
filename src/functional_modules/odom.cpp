@@ -25,8 +25,15 @@ void Odom::processPacket(const std::vector<std::string>& cmd)
 
 void Odom::loop()
 {
-  update(omnimotors_->m[0].getMeasuredSpeed(), omnimotors_->m[1].getMeasuredSpeed(), omnimotors_->m[2].getMeasuredSpeed());
-  sendPacket("ODOM:%f:%f:%f:%f:%f:%f\r\n", getPosX(), getPosY(), getOriZ(), getLinVelX(), getLinVelY(), getAngVelZ());
+  while (true) {
+    update(omnimotors_->m[0].getMeasuredSpeed(), omnimotors_->m[1].getMeasuredSpeed(), omnimotors_->m[2].getMeasuredSpeed());
+    sendPacket("ODOM:%f:%f:%f:%f:%f:%f\r\n", getPosX(), getPosY(), getOriZ(), getLinVelX(), getLinVelY(), getAngVelZ());
+  }
+}
+
+void Odom::stop()
+{
+  thread_odom.terminate();
 }
 
 bool Odom::startModule()
@@ -53,6 +60,9 @@ bool Odom::startModule()
 
   // initialize vectors with zeros
   reset();
+
+  Thread thread_odom;
+  thread_odom.start(callback(omnimotors_, Odom::loop));
 
   return true;
 }

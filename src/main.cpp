@@ -72,6 +72,11 @@ int main()
   packetprocessor = PacketProcessor(&serial_pc);
   initializer = Initializer(&packetprocessor);
 
+  // Create and start threads for modules main loop functions, currently only Odom::main which updates odometry
+//  for (std::vector<FunctionalModule *>::iterator module = initializer.functional_modules.begin(); module != initializer.functional_modules.end(); module++)
+//  {
+//    (*module)->startThreads();
+//  }
 
   // MAIN LOOP
   while (true)
@@ -99,12 +104,6 @@ int main()
       serial_arrived = 0;
       packetprocessor.processPacket(packet);
       packet_received_b = false;
-    }
-    
-    // Call all loops, currently only Update odometry
-    for (std::vector<FunctionalModule *>::iterator module = initializer.functional_modules.begin(); module != initializer.functional_modules.end(); module++)
-    {
-      (*module)->loop();
     }
 
     // Synchronize to given MAIN_DELTA_T

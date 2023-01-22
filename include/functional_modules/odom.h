@@ -28,6 +28,8 @@ public:
 
   void loop();
 
+  void stop();
+
   bool startModule();
 
   /**
@@ -95,6 +97,8 @@ private:
   Matrix odom_matrix_inv_; /**< Inverse of the odometry matrix */
 
   const float delta_t_;
+
+  Thread thread_odom;
 
   OmniMotors *omnimotors_;
 };

@@ -72,31 +72,12 @@ int main()
   packetprocessor = PacketProcessor(&serial_pc);
   initializer = Initializer(&packetprocessor);
 
-  // Create and start threads for modules main loop functions, currently only Odom::main which updates odometry
-//  for (std::vector<FunctionalModule *>::iterator module = initializer.functional_modules.begin(); module != initializer.functional_modules.end(); module++)
-//  {
-//    (*module)->startThreads();
-//  }
-
   // MAIN LOOP
   while (true)
   {
     main_timer.reset();
     main_timer.start();
-    /*for (uint8_t i = 0; i < MOTOR_COUNT; i++)  // Possibly debug for modules?
-    {
-      // MOTOR DEBUG
-      // serial_pc.printf("\r\n");
-//      serial_pc.printf("MOTOR %d: \r\n", i);
-//      serial_pc.printf("Speed[%d]: %f (%f): \r\n", i, m[i].getMeasuredSpeed(),
-//                       m[i].getSpeedSetPoint());
-//      // serial_pc.printf("Effort: %f: \r\n", m[i].getEffort());
-//      serial_pc.printf("Fault: %u: \r\n", m[i].getFaultPulseCount());
-//      serial_pc.printf("Current[%d]: %f: \r\n", i, m[i].getCurrent());
-    }*/
 
-//    serial_pc.printf("Serial arrived: %d\r\n", serial_arrived);
-    
     if (packet_received_b) // packet was completeted with \r \n
     {
       std::string packet(serial_buf);

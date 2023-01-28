@@ -98,7 +98,7 @@ private:
 
   const float delta_t_;
 
-  Thread thread_odom;
+  Thread thread_;
 
   OmniMotors *omnimotors_;
 };

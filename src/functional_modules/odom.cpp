@@ -33,7 +33,7 @@ void Odom::loop()
 
 void Odom::stop()
 {
-  thread_odom.terminate();
+  thread_.terminate();
 }
 
 bool Odom::startModule()
@@ -60,9 +60,9 @@ bool Odom::startModule()
 
   // initialize vectors with zeros
   reset();
-
-  Thread thread_odom;
-  thread_odom.start(callback(omnimotors_, Odom::loop));
+  
+  // Start loop on Odom thread
+  thread_.start(callback(this, &Odom::loop));
 
   return true;
 }
